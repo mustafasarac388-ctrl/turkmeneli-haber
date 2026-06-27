@@ -1,4 +1,26 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+
 export default function Home() {
+  const [news, setNews] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      const { data, error } = await supabase
+        .from("news")
+        .select("*")
+        .order("id", { ascending: false });
+
+      if (!error) {
+        setNews(data || []);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
   return (
     <main style={{ fontFamily: "sans-serif", background: "#f5f5f5" }}>
       
@@ -38,24 +60,30 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HABERLER */}
+      {/* HABERLER (SUPABASE) */}
       <section style={{ padding: "20px" }}>
         <h2>Son Haberler</h2>
 
         <div style={{ display: "grid", gap: "10px" }}>
-
-          <div style={{ background: "white", padding: "15px", borderRadius: "10px" }}>
-            Kerkük’te gündem hareketli
-          </div>
-
-          <div style={{ background: "white", padding: "15px", borderRadius: "10px" }}>
-            Eğitim alanında yeni gelişmeler
-          </div>
-
-          <div style={{ background: "white", padding: "15px", borderRadius: "10px" }}>
-            Ekonomi haberleri yükselişte
-          </div>
-
+          {news.length === 0 ? (
+            <div style={{ background: "white", padding: "15px", borderRadius: "10px" }}>
+              Henüz haber yok...
+            </div>
+          ) : (
+            news.map((item, i) => (
+              <div
+                key={i}
+                style={{
+                  background: "white",
+                  padding: "15px",
+                  borderRadius: "10px"
+                }}
+              >
+                <h3>{item.title}</h3>
+                <p>{item.content}</p>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
