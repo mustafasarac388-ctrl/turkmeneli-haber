@@ -1,13 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function AdminPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [news, setNews] = useState<any[]>([]);
 
-  const addNews = () => {
+  const addNews = async () => {
+    const { error } = await supabase.from("news").insert([
+      {
+        title,
+        content,
+        image: "",
+      },
+    ]);
+
+    if (error) {
+      alert("Hata: " + error.message);
+      return;
+    }
+
+    alert("Haber kaydedildi ✔");
+
     const newItem = {
       title,
       content,
@@ -41,7 +57,7 @@ export default function AdminPage() {
         Haberi Ekle
       </button>
 
-      <h2>Haberler</h2>
+      <h2>Local Liste (geçici)</h2>
 
       {news.map((n, i) => (
         <div key={i} style={{ background: "#eee", padding: 10, marginTop: 10 }}>
